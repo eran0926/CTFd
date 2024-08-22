@@ -23,16 +23,20 @@ services:
     depends_on:
       - db
     networks:
-        default:
-        internal:
+      default:
+      internal:
+
 
   nginx:
     image: nginx:stable
     restart: always
     volumes:
-      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
+      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - ctfd
 
@@ -48,19 +52,32 @@ services:
     volumes:
       - .data/mysql:/var/lib/mysql
     networks:
-        internal:
-    # This command is required to set important mariadb defaults
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+      internal: # This command is required to set important mariadb defaults
+    command:
+      [
+        mysqld,
+        --character-set-server=utf8mb4,
+        --collation-server=utf8mb4_unicode_ci,
+        --wait_timeout=28800,
+        --log-warnings=0
+      ]
 
   cache:
     image: redis:4
     restart: always
     volumes:
-    - .data/redis:/data
+      - .data/redis:/data
     networks:
-        internal:
+      internal:
+
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
 
 networks:
-    default:
-    internal:
-        internal: true
+  default:
+  internal:
+    internal: true
