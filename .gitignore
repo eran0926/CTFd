@@ -66,6 +66,7 @@ target/
 CTFd/static/uploads
 CTFd/uploads
 .data/
+.data-event/
 .ctfd_secret_key
 .*.swp
 
