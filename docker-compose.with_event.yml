@@ -47,7 +47,6 @@ services:
     depends_on:
       - db-event
     networks:
-      default:
       internal-event:
 
 
@@ -65,8 +64,10 @@ services:
       - ctfd-main
       - ctfd-event
     networks:
-      - internal-main
-      - internal-event
+      default:
+      internal-main:
+      internal-event:
+
 
   db-main:
     image: mariadb:10.11
